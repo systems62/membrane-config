@@ -1,0 +1,196 @@
+openapi: 3.0.3
+info:
+  title: CatalogAPI
+  description: CatalogAPI
+  version: '1'
+servers:
+  - url: http://ocp4.de:8088/api    
+    description: running server on ocp4.de
+paths:
+  /artikel/:
+    get:
+      tags:
+        - Shop
+      summary: Gebe alle Artikel zurück
+      description: Dieser Endpunkt liefert alle Artikel zurück
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtikelList'
+    post:
+      tags:
+        - Shop
+      summary: Erstelle einen Artikel
+      description: |
+        Legt einen Artikel an. Ein **Artikel** besteht aus:
+
+        * Name
+        * Preis
+
+        Der Name legt fest .... und der Preis ist wichtig.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Artikel'
+      responses:
+        '201':
+          description: created
+          headers:
+            Location:
+              description: URI des neuen Artikels
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtikelResponse'
+  /artikel/{aid}:    
+    get:
+      parameters:
+        - name: aid
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            description: ID des Artikels
+            example: 12345678-90ab-cdef-0123-456789abcdef
+      tags:
+        - Shop
+      summary: Gebe einen Artikel anhand der ID zurück
+      description: Dieser Endpunkt liefert einen Artikel anhand der ID zurück
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtikelResponse'
+    put:
+      parameters:
+        - name: aid
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            description: ID des Artikels
+            example: 12345678-90ab-cdef-0123-456789abcdef
+      tags:
+        - Shop
+      summary: Ändere einen Artikel anhand der ID
+      description: Dieser Endpunkt ändert/ersetzt einen Artikel anhand der ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Artikel'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtikelResponse'
+    delete:
+      parameters:
+        - name: aid
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            description: ID des Artikels
+            example: 12345678-90ab-cdef-0123-456789abcdef
+      tags:
+        - Shop
+      summary: Lösche einen Artikel anhand der ID
+      description: Dieser Endpunkt löscht einen Artikel anhand der ID
+      responses:
+        '200':
+          description: Ok
+    patch:
+      parameters:
+        - name: aid
+          in: path
+          required: true
+          schema:
+            type: string
+            minLength: 1
+            description: ID des Artikels
+            example: 12345678-90ab-cdef-0123-456789abcdef
+      tags:
+        - Shop
+      summary: Ändere einen Artikel anhand der ID
+      description: Dieser Endpunkt ändert/ersetzt einen Artikel anhand der ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArtikelPatch'
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtikelResponse'
+
+components:
+  schemas:
+    ArtikelPatch:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 20
+          description: Name des Artikels
+          example: Grapefruit
+        preis:
+          type: number
+          minimum: 0
+          description: Preis des Artikels
+          example: 0.99
+    ArtikelList:
+      type: object
+      properties:
+        artikel:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtikelResponse'
+    ArtikelResponse:
+      type: object
+      properties:
+        aid:
+          type: string
+          minLength: 1
+          description: ID des Artikels
+          example: 12345678-90ab-cdef-0123-456789abcdef
+        name:
+          type: string
+          maxLength: 20
+          description: Name des Artikels
+          example: Grapefruit
+        preis:
+          type: number
+          minimum: 0
+    Artikel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Grapefruit
+          maxLength: 20
+          description: Name des Artikels
+        preis:
+          type: number
+          example: 0.99
+          minimum: 0
+          description: Preis des Artikels
+      required: 
+        - preis
